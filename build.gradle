@@ -52,6 +52,7 @@ shadowJar {
     manifest {
         attributes 'Multi-Release': true
     }
+    archiveClassifier.set ''
     doLast {
         println botsBuildDir
         copy {
