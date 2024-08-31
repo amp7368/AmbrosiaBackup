@@ -4,6 +4,7 @@ import com.ambrosia.backup.Ambrosia;
 import com.ambrosia.backup.config.AmbrosiaDatabaseConfig;
 import com.ambrosia.backup.google.GoogleService;
 import com.ambrosia.backup.google.SheetsService;
+import com.ambrosia.backup.shutdown.ShutdownExports;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.opencsv.CSVWriter;
 import java.io.File;
@@ -21,17 +22,22 @@ public class ExportDatabase {
 
     public static final int FETCH_SIZE = 1000;
 
+
     public static void export(AmbrosiaDatabaseConfig config) throws SQLException, IOException {
         Connection conn = config.getConnection();
         conn.setAutoCommit(false);
         List<TableName> tableNames = getTableNames(config, conn);
         Spreadsheet spreadsheet = GoogleService.createTableSpreadsheet(config, tableNames);
+        ShutdownExports.get().setActiveExport(spreadsheet);
         for (TableName tableName : tableNames) {
             Ambrosia.logger().info("Exporting {}.{}", config.getType(), tableName);
             File file = exportTable(conn, tableName);
+            ShutdownExports.get().setActiveFile(file);
             SheetsService.upload(spreadsheet, tableName, file);
             file.delete();
+            ShutdownExports.get().setActiveFile(null);
         }
+        ShutdownExports.get().setActiveExport(null);
         Ambrosia.logger().info("Finished exporting {}", config.getType());
     }
 
