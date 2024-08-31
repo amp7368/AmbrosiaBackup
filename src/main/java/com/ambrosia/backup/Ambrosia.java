@@ -21,6 +21,7 @@ public class Ambrosia {
     }
 
     public static void main(String[] args) throws IOException, GeneralSecurityException {
+        HandleShutdown.addShutdownHook();
         initSQLDriver();
         AmbrosiaConfig.load();
         GoogleService.load();
