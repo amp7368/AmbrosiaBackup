@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  ambrosia-backups:
+    restart: unless-stopped
+    container_name: ${COMPOSE_NAME}.${IMAGE_NAME}
+    image: ${COMPOSE_NAME}/${IMAGE_NAME}
+    build:
+      context: .
+      args:
+        - JAVA_VERSION=${JAVA_VERSION}
+        - JAR_FILE=${JAR_FILE}
+        - WORKINGDIR=${WORKINGDIR}
+    environment:
+      - JAR_FILE=${JAR_FILE}
+      - WORKINGDIR=${WORKINGDIR}
+    networks:
+      - 'ambrosia-loans'
+      - 'ambrosia-casino'
+    volumes:
+      - '${MOUNT_DIR}/java:${WORKINGDIR}'
+      - '/dev/urandom:/dev/random'
+networks:
+  ambrosia-loans:
+    name: ambrosia-loans
+  ambrosia-casino:
+    name: ambrosia-casino
