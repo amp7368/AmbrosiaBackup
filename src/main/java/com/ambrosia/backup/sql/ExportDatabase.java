@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -85,9 +86,11 @@ public class ExportDatabase {
             while (result.next()) {
                 String schema = result.getString("table_schema");
                 String name = result.getString("table_name");
+                if (config.isIgnored(name)) continue;
                 tableNames.add(new TableName(schema, name));
             }
         }
+        tableNames.sort(Comparator.comparing(TableName::toString));
         return tableNames;
     }
 }

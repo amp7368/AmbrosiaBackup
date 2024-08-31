@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
@@ -20,6 +22,7 @@ public class AmbrosiaDatabaseConfig {
     public static final CronParser PARSER = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
 
     protected String schema = "public";
+    protected List<String> ignoredTables = new ArrayList<>();
     protected String fileName = "Name";
     protected String folderId = "None";
     protected String cronDefinition = "0 0 * * 1";
@@ -31,7 +34,6 @@ public class AmbrosiaDatabaseConfig {
     protected String username = "username";
     protected String password = "password";
     protected String connectionUrl = "jdbc:mysql://localhost:3306/ambrosia";
-
 
     protected transient Cron parsed;
 
@@ -96,5 +98,9 @@ public class AmbrosiaDatabaseConfig {
 
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(connectionUrl, username, password);
+    }
+
+    public boolean isIgnored(String name) {
+        return this.ignoredTables.stream().anyMatch(name::equalsIgnoreCase);
     }
 }
